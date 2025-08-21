@@ -1,45 +1,74 @@
 import os
 import matplotlib
-matplotlib.use('Agg')  # forza backend senza GUI su macOS
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from flask import Flask, render_template, request
 from sklearn.tree import DecisionTreeClassifier, plot_tree
+import emoji
 
 app = Flask(__name__)
 
-# Dataset di esempio: parole, link, emoji
+# dataset più grande
 X = [
-    [50, 0, 0],
-    [200, 2, 1],
-    [500, 0, 3],
-    [30, 1, 0],
-    [400, 3, 5]
+    [20, 0, 0],   # breve, no link, no emoji → da leggere
+    [40, 0, 0],   # breve medio → da leggere
+    [80, 0, 0],   # medio → da leggere
+    [150, 1, 0],  # un po' lungo con link → urgente
+    [200, 2, 0],  # lungo con più link → urgente
+    [250, 3, 1],  # molto lungo con link ed emoji → urgente
+    [50, 0, 3],   # breve con emoji → spam
+    [100, 0, 4],  # medio con emoji → spam
+    [120, 1, 5],  # medio con link + emoji → spam
+    [300, 0, 6],  # molto lungo con emoji → spam
+    [400, 0, 8],  # lunghissimo con emoji → spam
+    [350, 2, 0],  # molto lungo con link → urgente
+    [15, 0, 1],   # cortissimo con emoji → spam
+    [60, 1, 0],   # breve con link → urgente
+    [90, 0, 2],   # medio con emoji → spam
 ]
 
-y = ["da leggere", "urgente", "spam", "da leggere", "spam"]
+y = [
+    "da leggere",
+    "da leggere",
+    "da leggere",
+    "urgente",
+    "urgente",
+    "urgente",
+    "spam",
+    "spam",
+    "spam",
+    "spam",
+    "spam",
+    "urgente",
+    "spam",
+    "urgente",
+    "spam",
+]
 
-# Allena il modello
 clf = DecisionTreeClassifier()
 clf.fit(X, y)
 
-# Funzione per estrarre feature dal testo
 def extract_features(text):
     words = len(text.split())
     links = text.count("http")
-    emojis = sum(1 for c in text if c in "😀😂😎😍👍")
+    emojis = sum(1 for c in text if c in emoji.EMOJI_DATA)
     return [words, links, emojis]
 
-# Genera immagine dell'albero senza aprire finestre
 def plot_tree_image():
-    plt.figure(figsize=(6,4))
-    plot_tree(clf, feature_names=["words","links","emojis"], class_names=clf.classes_, filled=True)
+    plt.figure(figsize=(8,5))
+    plot_tree(
+        clf,
+        feature_names=["words", "links", "emojis"],
+        class_names=clf.classes_,
+        filled=True,
+        rounded=True
+    )
     if not os.path.exists("static"):
         os.makedirs("static")
     plt.savefig("static/tree.png")
     plt.close()
 
-# Rotta principale
-@app.route("/", methods=["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def index():
     prediction = ""
     if request.method == "POST":
