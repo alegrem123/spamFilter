@@ -55,19 +55,19 @@ def extract_features(text):
     return [words, links, emojis]
 
 def plot_tree_image():
-    plt.figure(figsize=(8,5))
+    plt.figure(figsize=(12,9), dpi=100)
     plot_tree(
         clf,
         feature_names=["words", "links", "emojis"],
         class_names=clf.classes_,
         filled=True,
-        rounded=True
+        rounded=True,
+        fontsize=12
     )
     if not os.path.exists("static"):
         os.makedirs("static")
     plt.savefig("static/tree.png")
     plt.close()
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     prediction = ""
