@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Filtro Spam - Decision Tree</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 50px; 
+            background-color: #f9f9f9; 
+        }
+        textarea { 
+            width: 400px; 
+            height: 100px; 
+        }
+        button { 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            margin-top: 10px; 
+        }
+        .result { 
+            margin-top: 20px; 
+            font-size: 18px; 
+            font-weight: bold; 
+        }
+        img { 
+            margin-top: 20px; 
+            border: 1px solid #ccc; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Filtro Spam - Decision Tree</h1>
+
+    <!-- Campo per inserire testo/email -->
+    <form method="post">
+        <textarea name="email_text" placeholder="Incolla qui la tua email o testo"></textarea><br>
+        <button type="submit">Predici</button>
+    </form>
+
+    <!-- Mostra predizione e albero se disponibili -->
+    {% if prediction %}
+        <div class="result">Predizione: {{ prediction }}</div>
+        <img src="{{ url_for('static', filename='tree.png') }}" alt="Albero Decisionale">
+    {% endif %}
+</body>
+</html>
